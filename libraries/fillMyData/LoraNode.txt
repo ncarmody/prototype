@@ -1,0 +1,57 @@
+#include "structList.h"
+#include "CO2.h"
+#include "dhtForEsp32.h"
+#define ID 1
+// #include <list.h>
+
+
+struct_message myData;
+int countForDynamicMonitoring = 0;
+bool flag = false;
+
+void setup()
+{	
+	myData.id = ID;
+	countForDynamicMonitoring++;
+
+	Serial.begin(115200);
+	while(!Serial){
+		;
+	}
+	setupDHT();	
+	setupCO2();
+	
+
+
+}
+
+void loop()
+{	
+
+
+	if(!flag){
+	delay(1000);
+	// *********************************measure temperature & humidity
+		loopDHT(myData.humidity, myData.temperature);
+		flag = true;
+
+	}else if(flag){
+	
+	// *********************************measure CO2
+	delay(1000);
+	loopCO2(myData.co2);
+	myData.count = countForDynamicMonitoring;
+
+	flag = false;
+	myData.update = true;
+	// ******************************sleep
+
+	}
+
+
+
+	
+}
+
+
+

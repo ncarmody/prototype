@@ -1,0 +1,71 @@
+// #include "nowMasterOriginal.h"
+
+#include "US.h"
+// #include "TimerWakeUp.h"esp32
+#include "dhtForEsp32.h"
+#define ID 1
+// #include "list_header.h"
+
+
+struct_message myData;
+// RTC_DATA_ATTR float newMeanDistance;
+// RTC_DATA_ATTR float humidityReading;
+// RTC_DATA_ATTR float temperatureReading;
+int bootCount = 0;
+int countForDynamicMonitoring = 0;
+bool flag = false;
+
+void setup()
+{	
+	setupDHT();	
+	setupUS();
+	Serial.begin(115200);
+	countForDynamicMonitoring++;
+	
+
+
+}
+
+void loop()
+{	
+
+	Serial.print("OLD mean distance: ");
+	Serial.println(myData.distance);
+	if(!flag){
+	// delay(10000);
+	// *********************************measure temperature & humidity
+		loopDHT(myData.humidity, myData.temperature);
+		flag = true;
+		Serial.println("myData.humidity:");
+		Serial.println(myData.humidity);
+		// setupTWU(bootCount);
+	}else if(flag){
+
+
+
+	// *********************************measure distance
+	
+	loopUS(myData.distance);
+	myData.count = countForDynamicMonitoring;
+	myData.id = ID;
+
+	// loopEspNowMaster(myData);
+	Serial.println("sent!");
+	flag = false;
+	myData.update = true;
+
+	// *********************************sleep
+	Serial.println("myData.temperature:");
+	Serial.println(myData.temperature);
+
+	// setupTWU(bootCount);
+
+	}
+
+
+
+	
+}
+
+
+
